@@ -1,0 +1,31 @@
+cabal-version:      2.4
+name:               aoc2021
+version:            0.1.0.0
+
+-- A short (one-line) description of the package.
+synopsis: solutions to the Advent of Code 2021 problems
+
+-- A longer description of the package.
+description: see the synopsis
+
+-- A URL where users can report bugs.
+-- bug-reports:
+
+-- The license under which the package is released.
+-- license:
+author:             Tamer Aly
+maintainer:         taly.dev75@gmail.com
+
+extra-source-files:
+
+executable aoc1
+    main-is:          Main1.hs
+
+    -- Modules included in this executable, other than Main.
+    -- other-modules:
+
+    build-depends:      base ^>=4.14.3.0
+    hs-source-dirs:     src
+    default-extensions: OverloadedStrings
+    default-language:   Haskell2010
+    ghc-options:        -Wdefault -Wextra -Wall -Wcompat
