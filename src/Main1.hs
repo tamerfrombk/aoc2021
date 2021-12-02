@@ -16,8 +16,12 @@ increases _     = 0
 solve1 :: String -> String
 solve1 = show . increases . makeDepths
 
+slideSums :: [Depth] -> [Depth]
+slideSums (a:b:c:rest) = sum [a,b,c] : slideSums (b:c:rest)
+slideSums _            = []
+
 solve2 :: String -> String
-solve2 = undefined
+solve2 = show . increases . slideSums . makeDepths
 
 mainWithArgs :: [String] -> IO ()
 mainWithArgs (n:path:_)
