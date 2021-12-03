@@ -1,11 +1,10 @@
 module Main where
 
 import Util ( mainImpl )
+import Data.List ( foldl' )
 
 data Command = Forward Int | Down Int | Up Int
     deriving (Show, Eq)
-
-type Position = (Int, Int)
 
 makeCommands :: String -> [Command]
 makeCommands = map (makeCommand . words) . lines
@@ -15,19 +14,23 @@ makeCommands = map (makeCommand . words) . lines
           makeCommand ["down",    n] = Down    (read n)
           makeCommand ws             = error $ "unrecognized command sequence: " <> unwords ws
 
-move :: Command -> Position -> Position
-move (Forward n) (h, d) = (h + n, d)
-move (Up      n) (h, d) = (h, d - n)
-move (Down    n) (h, d) = (h, d + n)
-
-finalPosition :: [Command] -> Position
-finalPosition = foldr move (0, 0)
+type Position = (Int, Int)
 
 solve1 :: String -> Int
-solve1 = uncurry (*) . finalPosition . makeCommands
+solve1 = uncurry (*) . foldl' move (0, 0) . makeCommands
+    where move :: Position -> Command -> Position
+          move (h, d) (Forward n) = (h + n, d)
+          move (h, d) (Up      n) = (h, d - n)
+          move (h, d) (Down    n) = (h, d + n)
 
-solve2 :: String -> String
-solve2 = undefined
+type AimPosition = (Int, Int, Int)
+
+solve2 :: String -> Int
+solve2 = uncurry (*) . (\(a, b, _) -> (a, b)) . foldl' moveAim (0, 0, 0) . makeCommands
+    where moveAim :: AimPosition -> Command -> AimPosition
+          moveAim (h, d, a) (Forward n) = (h + n, d + (a * n), a)
+          moveAim (h, d, a) (Up      n) = (h, d, a - n)
+          moveAim (h, d, a) (Down    n) = (h, d, a + n)
 
 main :: IO ()
 main = mainImpl solve1 solve2
