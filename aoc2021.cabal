@@ -21,8 +21,7 @@ extra-source-files:
 executable aoc1
     main-is:          Main1.hs
 
-    -- Modules included in this executable, other than Main.
-    -- other-modules:
+    other-modules:      Util
 
     build-depends:      base ^>=4.14.3.0
     hs-source-dirs:     src
@@ -33,8 +32,7 @@ executable aoc1
 executable aoc2
     main-is:          Main2.hs
 
-    -- Modules included in this executable, other than Main.
-    -- other-modules:
+    other-modules:      Util
 
     build-depends:      base ^>=4.14.3.0
     hs-source-dirs:     src
