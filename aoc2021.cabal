@@ -6,17 +6,15 @@ version:            0.1.0.0
 synopsis: solutions to the Advent of Code 2021 problems
 
 -- A longer description of the package.
-description: see the synopsis
+description: solutions to the Advent of Code 2021 problems in Haskell
 
 -- A URL where users can report bugs.
--- bug-reports:
+bug-reports: https://github.com/tamerfrombk/aoc2021/issues
 
 -- The license under which the package is released.
--- license:
+license:            MIT
 author:             Tamer Aly
 maintainer:         taly.dev75@gmail.com
-
-extra-source-files:
 
 executable aoc1
     main-is:          Main1.hs
