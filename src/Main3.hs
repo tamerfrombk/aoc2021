@@ -4,32 +4,34 @@ import Util ( mainImpl )
 
 import Data.Char ( digitToInt )
 
-type Diagnostic = [[Int]]
+type Bit        = Int
+type Binary     = [Bit]
+type Diagnostic = [Binary]
 
 makeDiagnostic :: String -> Diagnostic
 makeDiagnostic = map (map digitToInt) . lines
 
-fromBinary :: [Int] -> Int
+fromBinary :: Binary -> Int
 fromBinary xs = sum $ map powerOf2 $ zip [0 .. length xs - 1] (reverse xs)
     where powerOf2 = \(e, bit) -> if bit == 1 then 2 ^ e else 0
 
-gammaRate :: Diagnostic -> [Int]
-gammaRate xs = map (\f -> f xs) $ go <$> [0..length (head xs) - 1]
-    where go p ns = if bits > half then 1 else 0
-            where bits = sum $ map (at p) ns
-                  half = length xs `div` 2
-                  at   = flip (!!)
+flipBit :: Bit -> Bit
+flipBit 1 = 0
+flipBit 0 = 1
+flipBit b = error $ "invalid bit: " <> show b
 
-epsilonRate :: Diagnostic -> [Int]
-epsilonRate = map flipBit . gammaRate
-    where flipBit 1 = 0
-          flipBit 0 = 1
-          flipBit b = error $ show b <> " is not a valid bit"
+mostCommonBitAt :: Int -> Diagnostic -> Bit
+mostCommonBitAt p d = fromEnum $ setBitCountAt p >= halfTotalBitCount
+    where setBitCountAt pos = sum $ map (!! pos) d
+          halfTotalBitCount = length d `div` 2
+
+gammaRate :: Diagnostic -> Binary
+gammaRate xs = map ($ xs) $ mostCommonBitAt <$> [0..length (head xs) - 1]
 
 solve1 :: String -> Int
-solve1 s = gamma * epsilon
-    where gamma      = fromBinary $ gammaRate diagnostic
-          epsilon    = fromBinary $ epsilonRate diagnostic
+solve1 s = fromBinary gamma * fromBinary epsilon
+    where gamma      = gammaRate diagnostic
+          epsilon    = map flipBit gamma
           diagnostic = makeDiagnostic s
 
 solve2 :: String -> Int
