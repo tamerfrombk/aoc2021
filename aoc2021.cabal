@@ -48,3 +48,14 @@ executable aoc3
     default-extensions: OverloadedStrings
     default-language:   Haskell2010
     ghc-options:        -Wdefault -Wextra -Wall -Wcompat
+
+executable aoc4
+    main-is:          Main4.hs
+
+    other-modules:      Util
+
+    build-depends:      base ^>=4.14.3.0
+    hs-source-dirs:     src
+    default-extensions: OverloadedStrings
+    default-language:   Haskell2010
+    ghc-options:        -Wdefault -Wextra -Wall -Wcompat
