@@ -21,9 +21,12 @@ flipBit 0 = 1
 flipBit b = error $ "invalid bit: " <> show b
 
 mostCommonBitAt :: Int -> Diagnostic -> Bit
-mostCommonBitAt p d = fromEnum $ setBitCountAt p >= halfTotalBitCount
-    where setBitCountAt pos = sum $ map (!! pos) d
-          halfTotalBitCount = length d `div` 2
+mostCommonBitAt p d = fromEnum $ num1s >= compliment
+    where num1s       = length $ filter (==1) $ map (!! p) d
+          compliment  = length d - num1s
+
+leastCommonBitAt :: Int -> Diagnostic -> Bit
+leastCommonBitAt p = flipBit . mostCommonBitAt p
 
 gammaRate :: Diagnostic -> Binary
 gammaRate xs = map ($ xs) $ mostCommonBitAt <$> [0..length (head xs) - 1]
@@ -34,8 +37,21 @@ solve1 s = fromBinary gamma * fromBinary epsilon
           epsilon    = map flipBit gamma
           diagnostic = makeDiagnostic s
 
+type BitCountingStrategy = (Int -> Diagnostic -> Bit)
+
+rating :: BitCountingStrategy -> Diagnostic -> Binary
+rating strat = go 0
+    where go pos ds
+            | length d' == 1 = head d'
+            | otherwise      = go (pos + 1) d'
+            where mcb = strat pos ds
+                  d'  = filter (\bs -> bs !! pos == mcb) ds
+
 solve2 :: String -> Int
-solve2 = undefined
+solve2 s = fromBinary o2 * fromBinary co2
+    where o2         = rating mostCommonBitAt diagnostic
+          co2        = rating leastCommonBitAt diagnostic
+          diagnostic = makeDiagnostic s
 
 main :: IO ()
 main = mainImpl solve1 solve2
