@@ -27,33 +27,15 @@ type Board = [[N]]
 isWinner :: Board -> Bool
 isWinner b = any (any (all isMarked)) [b, transpose b]
 
-score :: Int -> Board -> Int
-score n b = n * foldr (\(Unmark x) acc -> x + acc) 0 unmarkedNums
-    where unmarkedNums = concatMap (filter isUnmarked) b
-
 data Game = Game {
     draws :: [Int]
     , boards :: [Board]
 } deriving Show
 
-updateBoard :: Int -> Board -> Board
-updateBoard n = map updateRow
+update :: Int -> [Board] -> [Board]
+update n = map (map updateRow)
     where updateRow :: [N] -> [N]
-          updateRow = map (\n' -> if isN n n' then mark n' else n')
-
-play :: Game -> (Board, Int)
-play = loop 0
-    where loop :: Int -> Game -> (Board, Int)
-          loop i (Game ds bs)
-            | not (null winners) = (head winners, ds !! (i - 1))
-            | length ds == 1     = case filter isWinner $ update draw bs of
-                                    []    -> error "a winner should always be present"
-                                    (x:_) -> (x, draw)  -- we want which board will win first
-            | otherwise          = loop (i + 1) $ Game { draws = ds, boards = update draw bs }
-            where update :: Int -> [Board] -> [Board]
-                  update n = map (updateBoard n)
-                  draw     = ds !! i
-                  winners  = filter isWinner bs
+          updateRow = map (\e -> if isN n e then mark e else e)
 
 parseGame :: String -> Game
 parseGame s = let (l:ls) = lines s in Game { draws = parseDraws l, boards = parseBoards ls }
@@ -65,11 +47,35 @@ parseGame s = let (l:ls) = lines s in Game { draws = parseDraws l, boards = pars
           parseBoards []                       = []
           parseBoards _                        = error "invalid parse assumptions"
 
-solve1 :: String -> Int
-solve1 = (\(b, d) -> score d b) . play . parseGame
+play1 :: Game -> (Board, Int)
+play1 = loop 0
+    where loop :: Int -> Game -> (Board, Int)
+          loop i (Game ds bs)
+            | not (null winners) = (head winners, prevDraw)
+            | otherwise          = loop (i + 1) Game { draws = ds, boards = bs' }
+            where draw     = ds !! i
+                  prevDraw  = ds !! (i - 1)
+                  bs'      = update draw bs
+                  winners  = filter isWinner bs
 
-solve2 :: String -> Int
-solve2 = undefined
+play2 :: Game -> (Board, Int)
+play2 = loop 0
+    where loop :: Int -> Game -> (Board, Int)
+          loop i (Game ds bs)
+            | length bs == 1 = if isWinner b then (b, prevDraw) else loop (i + 1) (Game ds bs')
+            | otherwise      = loop (i + 1) Game { draws = ds, boards = remaining }
+            where draw      = ds !! i
+                  prevDraw  = ds !! (i - 1)
+                  bs'       = update draw bs
+                  remaining = filter (not . isWinner) bs'
+                  b         = head bs
+
+type Play = Game -> (Board, Int)
+
+solve :: Play -> String -> Int
+solve p = (\(b, d) -> d * score b) . p . parseGame
+    where score :: Board -> Int
+          score = foldr (\(Unmark x) acc -> x + acc) 0 . concatMap (filter isUnmarked)
 
 main :: IO ()
-main = mainImpl solve1 solve2
+main = mainImpl (solve play1) (solve play2)
