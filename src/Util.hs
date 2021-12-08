@@ -1,6 +1,8 @@
 module Util (
     mainImpl
     , wordsWhen
+    , parseNums
+    , parseNumsBy
 ) where
 
 import System.Environment ( getArgs )
@@ -22,3 +24,9 @@ wordsWhen p s =  case dropWhile p s of
                       "" -> []
                       s' -> w : wordsWhen p s''
                             where (w, s'') = break p s'
+
+parseNums :: String -> [Int]
+parseNums = map (\w -> read w :: Int) . words
+
+parseNumsBy :: Char -> String -> [Int]
+parseNumsBy c = map (\w -> read w :: Int) . wordsWhen (==c)
