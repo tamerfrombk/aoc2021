@@ -2,14 +2,16 @@ module Main where
 
 import Util ( mainImpl, parseNumsBy )
 
-fuelTo :: Int -> [Int] -> Int
-fuelTo p = sum . map (\n ->abs $ n - p)
+type StepTransformer = Int -> Int
 
-solve1 :: String -> Int
-solve1 s = let nums = parseNumsBy ',' s in minimum $ map (`fuelTo` nums) [1 .. length nums]
+fuelTo :: StepTransformer -> Int -> [Int] -> Int
+fuelTo f p = sum . map (f . abs . (-) p)
 
-solve2 :: String -> Int
-solve2 = undefined
+sumTo :: Int -> Int
+sumTo n = (n * (n + 1)) `div` 2
+
+solve :: StepTransformer -> String -> Int
+solve f s = let nums = parseNumsBy ',' s in minimum $ map (\n -> fuelTo f n nums) [1 .. length nums]
 
 main :: IO ()
-main = mainImpl solve1 solve2
+main = mainImpl (solve id) (solve sumTo)
