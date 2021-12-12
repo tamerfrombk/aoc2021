@@ -1,30 +1,17 @@
 module Main where
 
-import Util ( mainImpl, parseNumsBy )
+import Util ( mainImpl, parseNumsBy, counts )
 
-newtype Fish = Fish Int
-    deriving (Show, Eq)
-
-tick :: Fish -> [Fish]
-tick (Fish n)
-    | n == 0    = [Fish 6, Fish 8]
-    | otherwise = [Fish (n - 1)]
-
-lifetime :: Int -> [Fish] -> [Fish]
-lifetime n = go 0
-    where go :: Int -> [Fish] -> [Fish]
-          go i fs
-            | i == n    = fs
-            | otherwise = concatMap tick $ go (i + 1) fs
+type Fish = Int
 
 parseFish :: String -> [Fish]
-parseFish = map Fish . parseNumsBy ','
+parseFish = map (snd . (\(n, c) -> (n, c - 1))) . counts . (++[0..8]) . parseNumsBy ','
 
-solve1 :: String -> Int
-solve1 = length . lifetime 80 . parseFish
-
-solve2 :: String -> String
-solve2 = id
+solve :: Int -> String -> Int
+solve days = sum . (!! days) . iterate shift . parseFish
+    where shift :: [Fish] -> [Fish]
+          shift [x0, x1, x2, x3, x4, x5, x6, x7, x8] = [x1, x2, x3, x4, x5, x6, x7 + x0, x8, x0]
+          shift _                                    = error "wrong number of fish"
 
 main :: IO ()
-main = mainImpl solve1 solve2
+main = mainImpl (solve 80) (solve 256)
