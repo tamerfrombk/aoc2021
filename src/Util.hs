@@ -3,6 +3,7 @@ module Util (
     , parseNums
     , parseNumsBy
     , counts
+    , count
 ) where
 
 import System.Environment ( getArgs )
@@ -35,3 +36,6 @@ wordsWhen p s =  case dropWhile p s of
 
 counts :: Ord a => [a] -> [(a, Int)]
 counts = map (\g -> (head g, length g)) . group . sort
+
+count :: (a -> Bool) -> [a] -> Int
+count p = length . filter p
