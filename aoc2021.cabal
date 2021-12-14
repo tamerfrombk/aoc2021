@@ -103,3 +103,14 @@ executable aoc8
     default-extensions: OverloadedStrings
     default-language:   Haskell2010
     ghc-options:        -Wdefault -Wextra -Wall -Wcompat
+
+executable aoc9
+    main-is:          Main9.hs
+
+    other-modules:      Util
+
+    build-depends:      base ^>=4.14.3.0
+    hs-source-dirs:     src
+    default-extensions: OverloadedStrings
+    default-language:   Haskell2010
+    ghc-options:        -Wdefault -Wextra -Wall -Wcompat
