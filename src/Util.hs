@@ -4,6 +4,8 @@ module Util (
     , parseNumsBy
     , counts
     , count
+    , (!?)
+    , (<->)
 ) where
 
 import System.Environment ( getArgs )
@@ -39,3 +41,12 @@ counts = map (\g -> (head g, length g)) . group . sort
 
 count :: (a -> Bool) -> [a] -> Int
 count p = length . filter p
+
+(!?) :: [a] -> Int -> Maybe a
+elems !? i
+    | i < 0 || i >= length elems = Nothing
+    | otherwise                  = Just (elems !! i)
+
+infixr 0 <->
+(<->) :: [a -> b] -> a -> [b]
+fs <-> e = map ($ e) fs
