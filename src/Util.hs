@@ -6,6 +6,7 @@ module Util (
     , count
     , (!?)
     , (<->)
+    , trd
 ) where
 
 import System.Environment ( getArgs )
@@ -50,3 +51,6 @@ elems !? i
 infixr 0 <->
 (<->) :: [a -> b] -> a -> [b]
 fs <-> e = map ($ e) fs
+
+trd :: (a, b, c) -> c
+trd (_, _, v) = v
